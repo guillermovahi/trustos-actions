@@ -60005,8 +60005,8 @@ async function getCredentials() {
       RoleSessionName: 'GithubActionSession'
     };
   
-    const command = new AssumeRoleCommand(params);
-    const response = await stsClient.send(command);
+    const command = new AssumeRoleCommand(params)
+    const response = await stsClient.send(command)
   
     return {
       accessKeyId: response.Credentials.AccessKeyId,
