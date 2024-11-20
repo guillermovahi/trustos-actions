@@ -1,0 +1,16 @@
+{
+  "name": "trustos-action",
+  "version": "1.0.0",
+  "description": "Certificación de código",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@actions/core": "1.11.1",
+    "axios": "1.7.7"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
