@@ -59989,7 +59989,7 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
 /* harmony export */   generateKongToken: () => (/* binding */ generateKongToken)
 /* harmony export */ });
-const { STSClient } = __nccwpck_require__(30)
+const { STSClient, AssumeRoleCommand } = __nccwpck_require__(30)
 const { SSMClient, GetParameterCommand } = __nccwpck_require__(112)
 
 const AWS_REGION = 'eu-west-1'

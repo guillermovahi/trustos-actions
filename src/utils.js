@@ -1,4 +1,4 @@
-const { STSClient } = require('@aws-sdk/client-sts')
+const { STSClient, AssumeRoleCommand } = require('@aws-sdk/client-sts')
 const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm')
 
 const AWS_REGION = 'eu-west-1'
