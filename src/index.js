@@ -11,7 +11,7 @@ async function run() {
     const token = login(apiUser, apiPassword)
     core.setOutput('token', token)
   } catch (error) {
-    setFailed(error.message)
+    core.setFailed(error.message)
   }
 }
 
