@@ -2,8 +2,7 @@
   "name": "trustos-actions",
   "version": "1.0.0",
   "description": "TrustOS github actions",
-  "main": "dist/index.js",
-  "type": "module",
+  "main": "src/index.js",
   "scripts": {
     "build": "ncc build src/index.js -o dist"
   },

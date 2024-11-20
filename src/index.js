@@ -1,14 +1,15 @@
-import { getInput, setOutput, setFailed } from '@actions/core'
-import { login } from './trustos'
+const core = require('@actions/core')
+
+const { login } = require('./trustos')
 
 async function run() {
   try {
-    const directory = getInput('directory')
-    const apiUser = getInput('api_user', { required: true })
-    const apiPassword = getInput('api_password', { required: true })
+    const directory = core.getInput('directory')
+    const apiUser = core.getInput('api_user', { required: true })
+    const apiPassword = core.getInput('api_password', { required: true })
 
     const token = login(apiUser, apiPassword)
-    setOutput('token', token)
+    core.setOutput('token', token)
   } catch (error) {
     setFailed(error.message)
   }
