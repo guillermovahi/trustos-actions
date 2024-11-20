@@ -1,15 +1,18 @@
 {
-  "name": "trustos-action",
+  "name": "trustos-actions",
   "version": "1.0.0",
-  "description": "Certificación de código",
-  "main": "index.js",
+  "description": "TrustOS github actions",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "ncc build src/index.js -o dist"
   },
   "dependencies": {
     "@actions/core": "1.11.1",
     "axios": "1.7.7"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "0.38.3"
   },
   "keywords": [],
   "author": "",

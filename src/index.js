@@ -1,4 +1,5 @@
 import { getInput, setOutput, setFailed } from '@actions/core'
+import { login } from './trustos'
 
 async function run() {
   try {
