@@ -1,0 +1,48 @@
+const { STSClient } = require('@aws-sdk/client-sts')
+const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm')
+
+const AWS_REGION = 'eu-west-1'
+const ROLE_ARN = process.env.AWS_ROLE_ARN
+
+const stsClient = new STSClient({
+  region: AWS_REGION
+})
+
+async function getCredentials() {
+    const params = {
+      RoleArn: ROLE_ARN,
+      RoleSessionName: 'GithubActionSession'
+    };
+  
+    const command = new AssumeRoleCommand(params);
+    const response = await stsClient.send(command);
+  
+    return {
+      accessKeyId: response.Credentials.AccessKeyId,
+      secretAccessKey: response.Credentials.SecretAccessKey,
+      sessionToken: response.Credentials.SessionToken
+    };
+  }
+
+  async function createSSMClient() {
+    const credentials = await getCredentials();
+    return new SSMClient({
+      region: AWS_REGION,
+      credentials: credentials
+    });
+  }
+
+export async function generateKongToken () {
+    const client = await createSSMClient()
+    const command = new GetParameterCommand({
+      Name: '/ref/kong_secret_key_jwt',
+      WithDecryption: true
+    })
+    const { Parameter: { Value: secretKey } } = await client.send(command)
+    const payload = {
+      iss: 'ref-github-jwt',
+      exp: Math.floor(Date.now() / 1000) + (10 * 60) // Expira en 10 minutos
+    }
+    const token = jwt.sign(payload, secretKey, { algorithm: 'HS256' })
+    return token
+  }

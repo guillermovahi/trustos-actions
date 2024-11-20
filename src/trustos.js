@@ -1,4 +1,5 @@
-import axios from 'axios';
+const axios = require('axios')
+const { generateKongToken } = require('./utils.js')
 
 const TRUSTOS_LAB_URL = 'https://lab.trustos.telefonicatech.com';
 const TRUSTOS_PROD_URL = 'https://apis.trustos.telefonicatech.com';
@@ -6,9 +7,13 @@ const TRUSTOS_PROD_URL = 'https://apis.trustos.telefonicatech.com';
 export async function login(username, password, env = 'lab') {
     const TRUSTOS_API_URL = env === 'lab' ? TRUSTOS_LAB_URL : TRUSTOS_PROD_URL
     try {
+        const kongHeader = { kongAuth: `Bearer ${await generateKongToken()}` }
         const response = await axios.post(`${TRUSTOS_API_URL}/id/v2/login`, {
             username,
             password
+        },
+        {
+            headers: kongHeader
         });
         return response.data.data.token;
     } catch (error) {
