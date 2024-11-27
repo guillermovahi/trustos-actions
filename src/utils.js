@@ -2,15 +2,18 @@ const { STSClient, AssumeRoleCommand } = require('@aws-sdk/client-sts')
 const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm')
 
 const AWS_REGION = 'eu-west-1'
-const ROLE_ARN = process.env.AWS_ROLE_ARN
 
 const stsClient = new STSClient({
   region: AWS_REGION
 })
 
 async function getCredentials() {
+    const roleArn = process.env.AWS_ROLE_ARN
+    if (!roleArn) {
+        throw new Error('AWS_ROLE_ARN environment variable is not set');
+      }
     const params = {
-      RoleArn: ROLE_ARN,
+      RoleArn: roleArn,
       RoleSessionName: 'GithubActionSession'
     };
   

@@ -1,20 +1,20 @@
-name: Test Action
+name: Create Certificate
+
 on:
-    workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
-  test:
+  create-certificate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Test Local Action
-        uses: ./  # Esto usa la action del directorio actual
-        with:
-          api_user: ${{ secrets.API_USER }}
-          api_password: ${{ secrets.API_PASSWORD }}
-
-      - name: Check Output
+      - uses: actions/checkout@v2
+      
+      - name: Create Certificate
         run: |
-          echo "Token received: ${{ steps.test.outputs.token }}"
+          chmod +x ./create_certificate.sh
+          ./create_certificate.sh \
+            "${{ secrets.TRUSTOS_USERNAME }}" \
+            "${{ secrets.TRUSTOS_PASSWORD }}" \
+            "${{ github.actor }}" \
+            "${{ github.sha }}"
