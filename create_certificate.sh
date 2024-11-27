@@ -17,6 +17,8 @@ PASSWORD="$2"
 GITHUB_USER="$3"
 GITHUB_COMMIT="$4"
 
+# Realizar login y mostrar la respuesta para debug
+echo "Realizando login..."
 LOGIN_RESPONSE=$(curl -s \
     -X POST \
     -H "accept: application/json" \
@@ -24,14 +26,23 @@ LOGIN_RESPONSE=$(curl -s \
     -d "{\"username\": \"$USERNAME\", \"password\": \"$PASSWORD\"}" \
     "$LOGIN_URL")
 
+echo "Respuesta del login:"
+echo "$LOGIN_RESPONSE" | jq '.'
+
 # Extraer el token usando jq
-TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.data.token')
+TOKEN=$(echo "$LOGIN_RESPONSE" | jq -r '.data.token')
 
 if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
     echo "Error: No se pudo obtener el token"
+    echo "Código de estado: $(echo "$LOGIN_RESPONSE" | jq -r '.statusCode')"
+    echo "Mensaje: $(echo "$LOGIN_RESPONSE" | jq -r '.message')"
     exit 1
 fi
 
+echo "Token obtenido correctamente"
+
+# Crear certificado
+echo "Creando certificado..."
 CERT_RESPONSE=$(curl -s \
     -X POST \
     "$CERT_URL" \
@@ -48,15 +59,14 @@ CERT_RESPONSE=$(curl -s \
     }")
 
 # Extraer y mostrar el certID
-CERT_ID=$(echo $CERT_RESPONSE | jq -r '.data.certID')
+CERT_ID=$(echo "$CERT_RESPONSE" | jq -r '.data.certID')
 
 if [ -z "$CERT_ID" ] || [ "$CERT_ID" == "null" ]; then
     echo "Error: No se pudo obtener el certID"
-    echo "Respuesta completa:"
-    echo $CERT_RESPONSE | jq '.'
+    echo "Respuesta completa del certificado:"
+    echo "$CERT_RESPONSE" | jq '.'
     exit 1
 fi
 
 echo "Certificado creado exitosamente"
 echo "CertID: $CERT_ID"
-
