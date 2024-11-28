@@ -47,21 +47,19 @@ generate_jwt() {
 
 # Generar JWT
 GITHUB_JWT=$(generate_jwt)
-echo "JWT generado para GitHub"
 
 # Realizar login y mostrar la respuesta para debug
 echo "Realizando login..."
 LOGIN_RESPONSE=$(curl -s \
     -X POST \
     -H "accept: application/json" \
-    -H "kongAuth: Bearer ${GITHUB_JWT}" \
+    -H "trustosAuth: Bearer ${GITHUB_JWT}" \
     -H "Content-Type: application/json" \
     -d "{\"username\": \"$USERNAME\", \"password\": \"$PASSWORD\"}" \
     "$LOGIN_URL")
 
 echo "Respuesta del login:"
 echo "$LOGIN_RESPONSE" | jq '.'
-
 
 # Extraer el token usando jq
 TOKEN=$(echo "$LOGIN_RESPONSE" | jq -r '.data.token')
@@ -82,6 +80,7 @@ CERT_RESPONSE=$(curl -s \
     "$CERT_URL" \
     -H "accept: application/json" \
     -H "Authorization: Bearer $TOKEN" \
+    -H "trustosAuth: Bearer ${GITHUB_JWT}" \
     -H "Content-Type: application/json" \
     -d "{
         \"name\": \"Github Code Certificate\",
