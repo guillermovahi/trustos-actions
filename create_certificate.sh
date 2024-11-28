@@ -3,7 +3,7 @@
 # Verificar si se proporcionaron los parámetros necesarios
 if [ $# -ne 4 ]; then
     echo "Uso: $0 <username> <password> <github_user> <github_commit>"
-    echo "Ejemplo: $0 'did:user:example123' 'mypassword' 'johndoe' 'abc123'"
+    echo "Ejemplo: $0 'did:user:example123' 'mypassword' 'johndoe' 'abc123' 'your-secret-key'"
     exit 1
 fi
 
@@ -14,20 +14,54 @@ CERT_URL="https://lab.trustos.telefonicatech.com/cert/v2/certificates?networkId=
 # Capturar parámetros
 USERNAME="$1"
 PASSWORD="$2"
-GITHUB_USER="$3"
-GITHUB_COMMIT="$4"
+SECRET_KEY="$3"
+GITHUB_USER="$4"
+GITHUB_COMMIT="$5"
+
+# Función para generar JWT
+generate_jwt() {
+    # Crear header
+    HEADER='{
+        "alg": "HS256",
+        "typ": "JWT"
+    }'
+    # Crear payload con timestamp actual + 10 minutos
+    PAYLOAD='{
+        "iss": "lab-external-jwt",
+        "exp": '"$(($(date +%s) + 600))"'
+    }'
+
+    # Codificar Header y Payload en base64url
+    HEADER_BASE64=$(echo -n "$HEADER" | jq -c | base64 | tr -d '=' | tr '+/' '-_')
+    PAYLOAD_BASE64=$(echo -n "$PAYLOAD" | jq -c | base64 | tr -d '=' | tr '+/' '-_')
+
+    # Crear firma
+    SIGNATURE=$(echo -n "${HEADER_BASE64}.${PAYLOAD_BASE64}" | \
+        openssl dgst -binary -sha256 -hmac "$SECRET_KEY" | \
+        base64 | tr -d '=' | tr '+/' '-_')
+
+    # Concatenar todo para formar el JWT
+    JWT="${HEADER_BASE64}.${PAYLOAD_BASE64}.${SIGNATURE}"
+    echo "$JWT"
+}
+
+# Generar JWT
+GITHUB_JWT=$(generate_jwt)
+echo "JWT generado para GitHub"
 
 # Realizar login y mostrar la respuesta para debug
 echo "Realizando login..."
 LOGIN_RESPONSE=$(curl -s \
     -X POST \
     -H "accept: application/json" \
+    -H "kongAuth: Bearer ${GITHUB_JWT}"
     -H "Content-Type: application/json" \
     -d "{\"username\": \"$USERNAME\", \"password\": \"$PASSWORD\"}" \
     "$LOGIN_URL")
 
 echo "Respuesta del login:"
 echo "$LOGIN_RESPONSE" | jq '.'
+
 
 # Extraer el token usando jq
 TOKEN=$(echo "$LOGIN_RESPONSE" | jq -r '.data.token')
@@ -39,7 +73,7 @@ if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
     exit 1
 fi
 
-echo "Token obtenido correctamente"
+echo "Token obtenido correctamente" 
 
 # Crear certificado
 echo "Creando certificado..."

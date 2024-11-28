@@ -7,7 +7,7 @@ jobs:
   create-certificate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       
       - name: Create Certificate
         run: |
@@ -15,5 +15,6 @@ jobs:
           ./create_certificate.sh \
             "${{ secrets.TRUSTOS_USERNAME }}" \
             "${{ secrets.TRUSTOS_PASSWORD }}" \
+            "${{ secrets.TRUSTOS_SECRET }}" \
             "${{ github.actor }}" \
             "${{ github.sha }}"
