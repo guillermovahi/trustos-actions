@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Verificar si se proporcionaron los parámetros necesarios
-if [ $# -ne 4 ]; then
+if [ $# -ne 5 ]; then
     echo "Uso: $0 <username> <password> <github_user> <github_commit>"
     echo "Ejemplo: $0 'did:user:example123' 'mypassword' 'johndoe' 'abc123' 'your-secret-key'"
     exit 1
