@@ -54,7 +54,7 @@ echo "Realizando login..."
 LOGIN_RESPONSE=$(curl -s \
     -X POST \
     -H "accept: application/json" \
-    -H "kongAuth: Bearer ${GITHUB_JWT}"
+    -H "kongAuth: Bearer ${GITHUB_JWT}" \
     -H "Content-Type: application/json" \
     -d "{\"username\": \"$USERNAME\", \"password\": \"$PASSWORD\"}" \
     "$LOGIN_URL")
